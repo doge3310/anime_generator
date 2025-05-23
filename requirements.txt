@@ -1,0 +1,5 @@
+torch
+kagglehub
+pillow
+torchvision
+matplotlib
