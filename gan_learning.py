@@ -14,8 +14,8 @@ optimizer_D = torch.optim.Adam(descriminator.parameters(), lr=0.01)
 loss_function = torch.nn.MSELoss()
 images = data_init.images_list
 
-for epoch in range(10):
-    for image in images:
+for epoch in range(3):
+    for index, image in enumerate(images):
         optimizer_D.zero_grad()
         optimizer_G.zero_grad()
 
@@ -38,7 +38,8 @@ for epoch in range(10):
         g_loss.backward()
         optimizer_G.step()
 
-    print(g_loss, d_loss)
+        if index % 1000 == 0:
+            print(f"{index} /// {len(images)}", end="\r")
 
     with torch.no_grad():
         z = torch.randn(latent_dim)
@@ -48,3 +49,7 @@ for epoch in range(10):
 
         plt.imshow(output)
         plt.show()
+
+if __name__ == "__main__":
+    torch.save(generator.state_dict(), "parameters.pkl")
+    torch.save(generator, "architecture.pkl")
