@@ -5,7 +5,7 @@ from torchvision import transforms
 
 
 path = kagglehub.dataset_download("splcher/animefacedataset") + r"\images"
-images = os.listdir(path)[: 1000]
+images = os.listdir(path)[: 20]
 size = 64
 images_list = []
 transform = transforms.Compose([transforms.Resize(size),

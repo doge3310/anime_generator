@@ -3,3 +3,4 @@ kagglehub
 pillow
 torchvision
 matplotlib
+torchinfo

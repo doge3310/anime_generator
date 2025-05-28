@@ -14,7 +14,10 @@ optimizer_D = torch.optim.Adam(descriminator.parameters(), lr=0.01)
 loss_function = torch.nn.MSELoss()
 images = data_init.images_list
 
-for epoch in range(3):
+generator.train()
+descriminator.train()
+
+for epoch in range(50):
     for index, image in enumerate(images):
         optimizer_D.zero_grad()
         optimizer_G.zero_grad()
@@ -25,30 +28,34 @@ for epoch in range(3):
 
         real_loss = loss_function(descriminator(image.reshape(np.prod(im_size))),
                                   real_mark)
-        fake_image = generator(z)
+        fake_image = generator(z).squeeze(0)[:, 0]
         fake_loss = loss_function(descriminator(fake_image),
                                   fake_mark)
         d_loss = real_loss + fake_loss
         d_loss.backward()
         optimizer_D.step()
 
-        output = generator(z)
+        output = generator(z).squeeze(0)[:, 0]
         g_loss = loss_function(descriminator(output),
                                real_mark)
         g_loss.backward()
         optimizer_G.step()
 
-        if index % 1000 == 0:
+        if index % 100 == 0:
             print(f"{index} /// {len(images)}", end="\r")
 
     with torch.no_grad():
-        z = torch.randn(latent_dim)
-        output = generator(z)
-        output = 0.5 * output + 0.5
-        output = output.reshape(3, 64, 64).permute(1, 2, 0).numpy()
+        z = np.random.random(latent_dim)
+        output = generator(torch.tensor(z, dtype=torch.float32))
+        print(output.size())
 
-        plt.imshow(output)
-        plt.show()
+        for i in range(output.size()[-1]):
+            output_image = output.squeeze(0)[:, i]
+            output_image = 0.5 * output_image + 0.5
+            output_image = output_image.reshape(3, 64, 64).permute(1, 2, 0).numpy()
+
+            plt.imshow(output_image)
+            plt.show()
 
 if __name__ == "__main__":
     torch.save(generator.state_dict(), "parameters.pkl")
